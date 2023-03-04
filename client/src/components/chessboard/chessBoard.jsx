@@ -23,8 +23,8 @@ const ChessBoard = () => {
     // highlighted squares
     const [highlightedSquares, setHighlightedSquares] = useState([]);
     // update positions in state 
-    function updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx,) {
-        dispatch(movePiece(oldRowIx, oldSquareIx, newRowIx, newSquareIx,))
+    function updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx, piece) {
+        dispatch(movePiece({oldRowIx, oldSquareIx, newRowIx, newSquareIx, piece}))
     }
     // update game state of playing
     function updateGameFn(type, newValue,) {

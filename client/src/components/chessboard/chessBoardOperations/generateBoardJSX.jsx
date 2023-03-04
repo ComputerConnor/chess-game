@@ -1,16 +1,17 @@
 import clickSquare from './clickSquare';
+import PromptingPawn from './promptingPawn';
 
-function horizonatlIndicatorDiv(ix) { 
+function horizonatlIndicatorDiv(ix) {
     return (
         <div className="horizontal-indicator">{'abcdefgh'.at(ix)}</div>
     );
 };
 
-function verticalIndicatorDiv(rows, rowIx){ 
+function verticalIndicatorDiv(rows, rowIx) {
     return (<div className="vertical-indicator">{rowIx === 0 ? (rows.length) : rows.indexOf(rows.at(-1 * rowIx))}</div>);
 };
 
-function squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition){
+function squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition) {
     return (<img
         src={'./imgs/' + (black.includes(sq) ? 'black/b' : 'white/w') + sq.toUpperCase() + '.png'}
         key={ix}
@@ -29,7 +30,7 @@ function squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition){
                             sq.toLowerCase() === 'b' ? 'bishop' : 'king'
         }
         onClick={(e) => {
-            if(piecesColor===e.target.parentElement.dataset.pieceColor) {
+            if (piecesColor === e.target.parentElement.dataset.pieceColor) {
                 setSelectSquarePosition(
                     e.target.parentElement.classList[1].split('-')[1]
                 );
@@ -39,7 +40,7 @@ function squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition){
 };
 
 function getSquares(
-    row, rowIx, rows, black, white,
+    row, rowIx, rows, black, white, prompted,
     chessboardState, boardPositions, selectSquarePosition, highlightedSquares, fenState, setHighlightedSquares, setSelectSquarePosition, piecesColor, socket
 ) {
     const squares = row.map((sq, ix) => {
@@ -56,7 +57,7 @@ function getSquares(
                         (ix % 2 === 0 ? 'square-ivory' : 'square-brown')) + (' square-') + (boardPositions[rowIx][ix]
                             + (selectSquarePosition === boardPositions[rowIx][ix] ? ' square-shadow' : '')
                             + (highlightedSquares.includes(boardPositions[rowIx][ix]) && sq === "" ? 'highlighted1' : highlightedSquares.includes(boardPositions[rowIx][ix]) && sq !== "" ? 'highlighted2' : '')
-                ) 
+                )
             }
             onClick={(e) => {
                 clickSquare(
@@ -78,24 +79,25 @@ function getSquares(
                         ? (<>
                             {verticalIndicatorDiv(rows, rowIx)}
                             {horizonatlIndicatorDiv(ix)}
-                            {squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition)}
+                            {squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}
                         </>)
                         : horizonatlIndicatorDiv(ix))
                     : (sq !== ""
-                        ? (<> {horizonatlIndicatorDiv(ix)}{squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition)}</>)
+                        ? (<> {horizonatlIndicatorDiv(ix)}{squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}</>)
                         : horizonatlIndicatorDiv(ix))
                 )
                 : (ix === 0 ?
                     (sq !== ""
                         ? (<>
                             {verticalIndicatorDiv(rows, rowIx)}
-                            {squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition)}
+                            {squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}
                         </>)
                         : verticalIndicatorDiv(rows, rowIx)
                     )
-                    : (sq !== "" ? (<>{squareImageTag(sq,ix, black, piecesColor, setSelectSquarePosition)}</>) : '')
+                    : (sq !== "" ? (<>{squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}</>) : '')
                 )
             )}
+            {prompted && sq === "p" || sq === "P" && rowIx === 0 || rowIx === 7 && <PromptingPawn sq={sq} black={black} coordinates={coordinates} updatePositions={updatePositions} setPrompted={setPrompted} />}
         </div>);
     });
     return squares;

@@ -35,6 +35,7 @@ const chessboardState = {
         firstMoveIsMade: false,
         piece: null,
         position: null,
+		pieceLetter: null,
     },
     piecesColor: 'white',
 };
@@ -44,9 +45,8 @@ const positionsSlice = createSlice({
     initialState: chessboardState,
     reducers: {
         movePiece: (state, {payload}) => {
-            const piece = state.positions[payload.oldRowIx][payload.oldSquareIx];
             state.positions[payload.oldRowIx][payload.oldSquareIx] = '';
-            state.positions[payload.newRowIx][payload.newSquareIx] = piece;
+            state.positions[payload.newRowIx][payload.newSquareIx] = payload.piece;
         },
         updateMoveInfo: (state, { payload }) => {
             state.moveInfo = payload.moveInfo

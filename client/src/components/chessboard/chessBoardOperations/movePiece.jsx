@@ -7,6 +7,7 @@ export default function movePieceImgToNewPosition(
     oldSquareIx,
     newRowIx,
     newSquareIx,
+    sq,
 ) {
     const sqHeight = clickedSquareElement.getBoundingClientRect().height;
     const sqWidth = clickedSquareElement.getBoundingClientRect().width;
@@ -28,6 +29,6 @@ export default function movePieceImgToNewPosition(
     img.style.left = xOperand*sqWidth+'px';
     img.style.top  = yOperand*sqHeight+'px';
     setTimeout(() => {
-        updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx,);
+        updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx, sq,);
     }, 1100);
 }
