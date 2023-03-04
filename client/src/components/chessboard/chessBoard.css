@@ -1,0 +1,92 @@
+#board {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+
+.row {
+  display: flex;
+  width: 400px;
+  height: 50px;
+}
+
+.row > div {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.square-shadow {
+  box-shadow: inset 0 0 10px 5px #ffb007eb;
+}
+
+.highlighted1:before {
+  content: "";
+  width: 17px;
+  height: 17px;
+  z-index: 3;
+  position: absolute;
+  background-color: #ff000066;
+  opacity: 0.9;
+  border-radius: 50%;
+}
+
+.highlighted2:before {
+  content: "";
+  width: 35px;
+  height: 35px;
+  z-index: 3;
+  border: 5px solid #00000059;
+  position: absolute;
+  background-color: transparent;
+  opacity: 0.9;
+  border-radius: 50%;
+}
+
+.square-brown {
+  background-color: #b58863;
+  color: #f0d9b5;
+}
+
+.square-ivory {
+  background-color: #f0d9b5;
+  color: #b58863;
+}
+
+.row > div img {
+  width: 87%;
+  height: 87%;
+  transition: 2s;
+  position: absolute;
+  cursor: pointer;
+}
+
+.vertical-indicator {
+  display: inline-block;
+  width: 15px;
+  position: absolute;
+  height: 15px;
+  font-size: 14px;
+  padding: 2px;
+  top: 0;
+  left: 0;
+  font-weight: bold;
+  color: black;
+}
+
+.horizontal-indicator {
+  display: inline-block;
+  width: 8px;
+  position: absolute;
+  height: 13px;
+  right: 0;
+  font-weight: 500;
+  color: black;
+  bottom: 0;
+  text-align: center;
+  font-size: 14px;
+  padding: 4px 2px 7px 7px;
+}
