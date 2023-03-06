@@ -1,0 +1,57 @@
+if (isComputer) {
+                    try {
+                        const computerMove = await axios.post('/computerMove', {
+                            useCredentials: true,
+                            body: {
+                                fen
+                            }
+                        });
+                    } catch (err) {
+                        // show something went wrong and prevent him from making further moves
+                    }
+                } else {
+                    if (piecesColor === 'white') {
+                        socket.emit('moved', 'a1', 'd1', fen, code, userId);
+                    }
+                    if (piecesColor === 'black') {
+                        socket.emit('moved', 'a8', 'd8', fen, code, userId);
+                    }
+                }
+
+
+if (isComputer) {
+    try {
+                        const computerMove = await axios.post('/computerMove', {
+                            useCredentials: true,
+                            body: {
+                                fen
+                            }
+                        });
+                    } catch (err) {
+                        // show something went wrong and prevent him from making further moves
+                    }
+                } else {
+                    if (piecesColor === 'white') {
+                        socket.emit('moved', 'h1', 'f1', fen, code, userId);
+                    }
+                    if (piecesColor === 'black') {
+                        socket.emit('moved', 'h8', 'f8', fen, code, userId);
+                    }
+                }
+
+
+if (isComputer) {
+            try {
+                const computerMove = await axios.post('/computerMove', {
+                    useCredentials: true,
+                    body: {
+                        fen
+                    }
+                });
+            } catch (err) {
+                // show something went wrong and prevent him from making further moves
+            }
+        } else {
+            // if the game is against an opponent not computer send to the opponent
+            socket.emit('moved', moveInfor.position, square, fen, code, userId);
+        }

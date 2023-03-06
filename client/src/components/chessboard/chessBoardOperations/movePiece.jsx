@@ -8,6 +8,7 @@ export default function movePieceImgToNewPosition(
     newRowIx,
     newSquareIx,
     sq,
+    updatePositions,
 ) {
     const sqHeight = clickedSquareElement.getBoundingClientRect().height;
     const sqWidth = clickedSquareElement.getBoundingClientRect().width;
@@ -16,18 +17,18 @@ export default function movePieceImgToNewPosition(
         xOperand = oldSquareIx - newSquareIx;
     } else if (oldSquareIx < newSquareIx) {
         xOperand = newSquareIx - oldSquareIx;
-    } else if (oldSquareIx === newSquareIx){
+    } else if (oldSquareIx === newSquareIx) {
         xOperand = 0;
     }
     if (oldRowIx > newRowIx) {
         yOperand = oldRowIx - newRowIx;
     } else if (oldRowIx < newRowIx) {
         yOperand = newRowIx - oldRowIx;
-    } else if (oldRowIx === newRowIx){
+    } else if (oldRowIx === newRowIx) {
         yOperand = 0;
     }
-    img.style.left = xOperand*sqWidth+'px';
-    img.style.top  = yOperand*sqHeight+'px';
+    img.style.left = xOperand * sqWidth + 'px';
+    img.style.top = yOperand * sqHeight + 'px';
     setTimeout(() => {
         updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx, sq,);
     }, 1100);

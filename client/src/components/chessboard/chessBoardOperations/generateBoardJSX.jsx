@@ -40,36 +40,36 @@ function squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition) {
 };
 
 function getSquares(
-    row, rowIx, rows, black, white, prompted,
-    chessboardState, boardPositions, selectSquarePosition, highlightedSquares, fenState, setHighlightedSquares, setSelectSquarePosition, piecesColor, socket
+    row, rowIx, rows,
+    isConnected, positionsState, fenState,
+    selectSquarePosition,
+    highlightedSquares, setHighlightedSquares, prompted, setPrompted,
+    checkmate, setCheckmate, setError, setGameWinner, setSelectSquarePosition,
+    updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
+    socket,
 ) {
     const squares = row.map((sq, ix) => {
         return (<div
             key={ix}
             data-coordinates={`${rowIx}-${ix}`}
             data-piece-color={
-                black.includes(sq) ? 'black' : white.includes(sq) ? 'white' : 'none'
+                positionsState.black.includes(sq) ? 'black' : positionsState.white.includes(sq) ? 'white' : 'none'
             }
             className={
                 (
                     rowIx % 2 === 0 ?
                         (ix % 2 === 0 ? 'square-brown' : 'square-ivory') :
-                        (ix % 2 === 0 ? 'square-ivory' : 'square-brown')) + (' square-') + (boardPositions[rowIx][ix]
-                            + (selectSquarePosition === boardPositions[rowIx][ix] ? ' square-shadow' : '')
-                            + (highlightedSquares.includes(boardPositions[rowIx][ix]) && sq === "" ? 'highlighted1' : highlightedSquares.includes(boardPositions[rowIx][ix]) && sq !== "" ? 'highlighted2' : '')
+                        (ix % 2 === 0 ? 'square-ivory' : 'square-brown')) + (' square-') + (positionsState.locations[rowIx][ix]
+                            + (selectSquarePosition === positionsState.locations[rowIx][ix] ? ' square-shadow' : '')
+                            + (highlightedSquares.includes(positionsState.locations[rowIx][ix]) && sq === "" ? 'highlighted1' : highlightedSquares.includes(positionsState.locations[rowIx][ix]) && sq !== "" ? 'highlighted2' : '')
                 )
             }
             onClick={(e) => {
                 clickSquare(
-                    socket,
-                    e.target,
-                    e.target.dataset.coordinates,
-                    sq,
-                    boardPositions[rowIx][ix],
-                    chessboardState,
-                    boardPositions,
-                    fenState,
-                    setHighlightedSquares
+                    e.target, sq, e.target.dataset.coordinates,
+                    positionsState, fenState, checkmate, socket, isConnected,
+                    setHighlightedSquares, setPrompted, setError, setCheckmate, setGameWinner,
+                    updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
                 )
             }}
         >
@@ -79,43 +79,51 @@ function getSquares(
                         ? (<>
                             {verticalIndicatorDiv(rows, rowIx)}
                             {horizonatlIndicatorDiv(ix)}
-                            {squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}
+                            {squareImageTag(sq, ix, positionsState.black, positionsState.piecesColor, setSelectSquarePosition)}
                         </>)
                         : horizonatlIndicatorDiv(ix))
                     : (sq !== ""
-                        ? (<> {horizonatlIndicatorDiv(ix)}{squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}</>)
+                        ? (<> {horizonatlIndicatorDiv(ix)}{squareImageTag(sq, ix, positionsState.black, positionsState.piecesColor, setSelectSquarePosition)}</>)
                         : horizonatlIndicatorDiv(ix))
                 )
                 : (ix === 0 ?
                     (sq !== ""
                         ? (<>
                             {verticalIndicatorDiv(rows, rowIx)}
-                            {squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}
+                            {squareImageTag(sq, ix, positionsState.black, positionsState.piecesColor, setSelectSquarePosition)}
                         </>)
                         : verticalIndicatorDiv(rows, rowIx)
                     )
-                    : (sq !== "" ? (<>{squareImageTag(sq, ix, black, piecesColor, setSelectSquarePosition)}</>) : '')
+                    : (sq !== "" ? (<>{squareImageTag(sq, ix, positionsState.black, positionsState.piecesColor, setSelectSquarePosition)}</>) : '')
                 )
             )}
-            {prompted && sq === "p" || sq === "P" && rowIx === 0 || rowIx === 7 && <PromptingPawn sq={sq} black={black} coordinates={coordinates} updatePositions={updatePositions} setPrompted={setPrompted} />}
+            {prompted && sq === "p" || sq === "P" && rowIx === 0 || rowIx === 7 && <PromptingPawn sq={sq} black={positionsState.black} coordinates={coordinates} updatePositions={updatePositions} setPrompted={setPrompted} socket={socket} />}
         </div>);
     });
     return squares;
 };
 
 export default function getRows(
-    black, white, chessboardState, boardPositions,
-    selectSquarePosition, highlightedSquares,
-    whiteCastling, blackCastling, turn, enPassant, halfMoves, fullMoves, setHighlightedSquares, setSelectSquarePosition, piecesColor,
-    socket
+    positionsState, fenState,
+    isConnected, positionsState, fenState,
+    selectSquarePosition,
+    highlightedSquares, setHighlightedSquares, prompted, setPrompted,
+    checkmate, setCheckmate, setError, setGameWinner, setSelectSquarePosition,
+    updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
+    socket,
 ) {
     const rows = chessboardState.map((row, rowIx, rows) => {
         return (
             <div className="row" key={rowIx}>
                 {
                     getSquares(
-                        row, rowIx, rows, black, white,
-                        chessboardState, boardPositions, selectSquarePosition, highlightedSquares, whiteCastling, blackCastling, turn, enPassant, halfMoves, fullMoves, setHighlightedSquares, setSelectSquarePosition, piecesColor, socket
+                        row, rowIx, rows,
+                        isConnected, positionsState, fenState,
+                        selectSquarePosition,
+                        highlightedSquares, setHighlightedSquares, prompted, setPrompted,
+                        checkmate, setCheckmate, setError, setGameWinner, setSelectSquarePosition,
+                        updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
+                        socket,
                     )
                 }
             </div>

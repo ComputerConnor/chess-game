@@ -1,8 +1,9 @@
-export default function PromptingPawn({ sq, black, coordinates, updatePositions, setPrompted }) {
+export default function PromptingPawn({ sq, black, coordinates, updatePositions, setPrompted, socket }) {
     function handlePrompt(coordinates, sq) {
         const rowIx = parseInt(coordinates.split('-')[0]);
         const squareIx = parseInt(coordinates.split('-')[1]);
         updatePositions(rowIx, squareIx, rowIx, squareIx, sq,);
+        socket.emit('prompt', rowIx, squareIx, sq,);
         setPrompted(null);
     }
     return (
