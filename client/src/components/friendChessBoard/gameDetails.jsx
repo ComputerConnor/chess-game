@@ -2,14 +2,10 @@ import React, { useContext, useState } from 'react';
 import { socketContext } from '../../App';
 import { verifyCookie } from '../generalOperations/cookiesOperations';
 
-const gameSecondPart = ({ operationsAllowed, setOperationsAllowed }) => {
+const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, setRunInterval }) => {
   const { socket } = useContext(socketContext);
   const [message, setMessage] = useState('');
   const [timing, setTiming] = useState({ min: 10, sec: 00 });
-  const [runInterval, setRunInterval] = useState(() => {
-    if (operationsAllowed) return true;
-    return false;
-  })
   const timer = useRef();
 
   function sendMessage() {
@@ -17,29 +13,43 @@ const gameSecondPart = ({ operationsAllowed, setOperationsAllowed }) => {
       socket.emit('message', message, code, userId);
     }
   }
+
   function endGame() {
+    setRunInterval(false);
     setEnd('The Game Have Been Ended!');
     if (verifyCookie('code') || verifyCookie('userId')) {
       socket.emit('endGame', code, userId);
       setOperationsAllowed(false);
     } else {
-      setError('Something Went Wrong!')
+      setError('Something Went Wrong!');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   }
+
   function rematch() {
     if (verifyCookie('code') || verifyCookie('userId')) {
       socket.emit('rematch', code, userId);
     } else {
-      setError('Something Went Wrong!')
+      setError('Something Went Wrong!');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   }
 
   useEffect(() => {
     const interval = setInterval(() => {
-      let sec = interval.sec === 0 ? 59 : interval.sec - 1;
-      setInterval({ min: interval.min - 1, sec: 59 });
+      if (runInterval) {
+        let sec = interval.sec === 0 ? 59 : interval.sec - 1;
+        let min = interval.sec === 0 && interval.min !== 10 ? interval.min - 1 : interval.min;
+        setInterval({ min: interval.min - 1, sec: 59 });
+      }
     }, 1000);
-    if (interval.sec === 0 && interval.min === 0) clearInterval(interval);
+    if (interval.sec === 0 && interval.min === 0) {
+      clearInterval(interval);
+    };
     return () => {
       clearInterval(interval);
     }

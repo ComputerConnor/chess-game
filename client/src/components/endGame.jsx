@@ -2,9 +2,10 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { verifyCookie } from './generalOperations/cookiesOperations';
 
-const EndGame = ({ end, setError }) => {
+const EndGame = ({ end, setError, computer }) => {
     // realtime operations and status
     const { socket } = useContext(socketContext);
+    // 
     // navigation function
     const navigateTo = useNavigate();
 
@@ -15,14 +16,23 @@ const EndGame = ({ end, setError }) => {
     }
 
     function rematch() {
-        if (verifyCookie('code')) {
-            let code = verifyCookie('code');
-            socket.on('rematch', code);
+        if (!computer) {
+            if (verifyCookie('code')) {
+                let code = verifyCookie('code');
+                socket.on('rematch', code);
+                // based on acceptance or rejection of other user act
+                // also don't forget to set in cookies something indicate the popup
+                // is present and if rematch accepting is being awaited cookie
+            } else {
+                setError('something went wrong!');
+                setTimeout(() => {
+                    setError(null);
+                }, 3000);
+            }
         } else {
-            setError('something went wrong!');
-            setTimeout(() => {
-                setError(null);
-            }, 3000);
+            // reset states
+            // reset redux states
+            // reset cookies
         }
     }
 

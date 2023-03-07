@@ -15,7 +15,11 @@ const fenSlice = createSlice({
     reducers: {
         updatePart: (state, action) => {
             state[action.payload.property] = action.payload.newValue
-        }
+        },
+		resetFenState: (state)=>{
+			state = fenState;
+			// document.cookie = 'fen='
+		},
     }
 });
 

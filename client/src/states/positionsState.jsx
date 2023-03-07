@@ -58,6 +58,10 @@ const positionsSlice = createSlice({
 		removePiece: (state, {payload})=> {
 			state.positions[payload.rowIx][payload.squareIx] = '';
 		},
+		resetPositionsState: (state)=>{
+			state = chessboardState;
+			// document.cookie = 'positionsState='
+		},
     },
 });
 export const { movePiece, updateMoveInfo, updatePiecesColor, removePiece } = positionsSlice.actions;

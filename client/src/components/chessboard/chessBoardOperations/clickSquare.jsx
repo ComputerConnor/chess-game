@@ -2,8 +2,8 @@ import axios from 'axios';
 import locationToPosition from './locationToPosition';
 import movePieceImgToNewPosition from './movePiece';
 import toFen from './toFen';
-import { verifyCookie } from '../../generalOperations/cookiesOperations'
-import { freeze } from '@reduxjs/toolkit';
+import { verifyCookie } from '../../generalOperations/cookiesOperations';
+import freezeAllOperations from '../../generalOperations/freezeAllOperations';
 
 export default async function clickSquare(
     clickedSquareElement, sq, coordinates,
@@ -27,7 +27,10 @@ export default async function clickSquare(
     if (checkmate || turn !== piecesColor || sq === "" && !moveInfo.firstMoveIsMade) return;
     if (!verifyCookie('userId') || !verifyCookie('code')) {
         setError('something went wrong!');
-        freezeEverything();
+        setTimeout(() => {
+            setError(null);
+        }, 3000);
+        freezeAllOperations();
     }
     const rowIx = parseInt(coordinates.split('-')[0]);
     const squareIx = parseInt(coordinates.split('-')[1]);
@@ -237,6 +240,9 @@ export default async function clickSquare(
             if (isCheckmate) {
                 setGameWinner(piecesColor);
                 setCheckmate(true);
+                if (!computer) {
+                    socket.emit('checkmate', code, userId);
+                }
             }
         } catch (err) {
             setError('check your internet connectivity');
