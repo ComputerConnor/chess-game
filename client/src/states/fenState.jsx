@@ -18,10 +18,19 @@ const fenSlice = createSlice({
         },
 		resetFenState: (state)=>{
 			state = fenState;
-			// document.cookie = 'fen='
+		},
+		reloadStateFromCookies: (state)=>{
+			if(verifyCookie('fenState')){
+				state = JSON.parse(verifyCookie('fenState'));
+			} else {
+				state = fenState;
+			}
+		},
+		reloadStateFromBackEnd: (state, {payload})=>{
+			state = payload;
 		},
     }
 });
 
-export const { updatePart } = fenSlice.actions;
+export const { reloadStateFromBackEnd, reloadStateFromCookies, resetFenState, updatePart } = fenSlice.actions;
 export default fenSlice.reducer;

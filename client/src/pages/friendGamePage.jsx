@@ -1,33 +1,40 @@
 import axios from 'axios';
 import React, { useContext, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { socketContext } from '../App';
 import SomethingWentWrong from '../components/somethingWentWrong';
+import { updatePiecesColor } from '../states/positionsState';
 
 function FriendGamePage() {
+  const { socket, isConnected, userId } = useContext(socketContext);
   const navigateTo = useNavigate();
+  const dispatch = useDispatch();
   const [popUp, setPopUp] = useState(false);
-  const [code, setCode] = useState(() => {
-    // check if does exist in cookies if yes return it;
-    return null;
-  });
-  const { socket } = useContext(socketContext);
-  const friendGame = useRef();
+  const [code, setCode] = useState(null);
+  const [error, setError] = useState(null);
+
   function enterGameCode(e) {
     setPopUp(true);
   }
   function createNewGame(e) {
     // create room , give it the white player
-    // check the userId does exist in cookies if yes
-    // socket.emit('createGame', userId);
-    // generate code for the room then send it back
-    // socket.on('recieveCode',(code)=>{
-      // setCode(code);
-    // });
-    // navigateTo('/friendChessBoards');
-    // else generate new one then do all this
+    if (isConnected && userId) {
+      socket.emit('createRoom', userId);
+      socket.on('recieveCode', (code) => {
+        setCode(code);
+        document.cookie = `code=${code}; max-age=${60 * 10 + 15}`;
+      });
+      navigateTo('/friendChessBoards');
+    } else {
+      setError('Something Went Wrong!');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+    };
   }
   function checkCode(e) {
+    e.preventDefault();
     const formData = new FormData();
     if (!code || code.length < 8) return;
     formData.append('code', code);
@@ -36,22 +43,29 @@ function FriendGamePage() {
         withCredentials: true,
         body: formData
       });
-      if (!isCodeValid) {
-        friendGame.current.append(<SomethingWentWrong text='Your Code is Invalid' />);
+      if (!isCodeValid || !userId) {
+        setError('Your Code is Invalid');
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
       } else {
-        navigateTo('/chessboard');
-        // socket.emit('joinGame', code, userId);
-        // give him the black player
+        socket.emit('joinGame', code, userId);
+        // set the pieces color of user to black if he joined it and not created it
+        dispatch(updatePiecesColor('black'));
+        navigateTo('/friendChessBoard');
       }
     } catch (err) {
-      friendGame.current.append(<SomethingWentWrong text='Something Went Wrong!' />);
+      setError('Something Went Wrong!');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   }
   return (
-    <div ref={friendGame} className='friendGame'>
+    <div className='friendGame'>
       <div className='friendGameButtons'>
         <div className='friend' onClick={enterGameCode}>
-          <button>Join Your Friend's Game</button>
+          <button>Join A Friend's Game</button>
         </div>
         <div className='computer' onClick={createNewGame}>
           <button>Create A New Game</button>
@@ -60,10 +74,14 @@ function FriendGamePage() {
       {
         popUp && (
           <form onSubmit={checkCode}>
-            <input type="text" name='code' required />
+            <input type="text" name='code' onChange={(e) => setCode(e.target.value)} required placeholder="Enter Game Code..." />
             <button type="submit">Join Game</button>
+            <button onClick={() => setPopUp(false)}>Close</button>
           </form>
         )
+      }
+      {
+        error && <SomethingWentWrong text={error} />
       }
     </div>
   )

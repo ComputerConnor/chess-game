@@ -1,3 +1,21 @@
+const ComputerChessBoard = () => {
+const FriendChessBoard = () => {
+    
+check for fen and positions states in cookies if they does exist in case of refreshing the page to set them to the states
+
+if the player during the play with computer delete userId and the fen and positions states stored in cookies 
+
+also all other states that the game depend on must be set in cookies if you are playing with computer or in backend if you play with other player to prevent tampering the progress of him, to check their values before setting the states
+
+what if a user delete one cookie and leave others
+  
+store just the userId and code game in cookies and all states of the game between two player in the server side until the game end, since it's a multiplayer online game it's not accurate to store the progress of a player in its broswer and he will be able to access and tamper it, there are two situation 
+  he has userId and game code so he can keep playing with other player if he don't have the code and userId then the game ended it's better than enabling him to tamper and change his progress with other player game, so as long as he have the code and userId he will still get the progress of his game even he refresh the page but if there's no code or userId he will be redirected out of the game page and send to server that there's no code for a user and other player must stay waiting for him until the timer is done and if he send rematch (but other player has deleted the cookies, and also what happens to the room if one of the users refresh the page and got new socket so each time a socket connect i should send with connect event the code and assign it to a room with the same value of code is it possible to send data with connect event)
+ 
+in terms of computer game just store the data in cookies if he tamper one of them reset the game except few states that doesn't change anything if they are tampered
+
+
+
 if (isComputer) {
                     try {
                         const computerMove = await axios.post('/computerMove', {

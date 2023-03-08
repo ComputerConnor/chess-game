@@ -60,9 +60,18 @@ const positionsSlice = createSlice({
 		},
 		resetPositionsState: (state)=>{
 			state = chessboardState;
-			// document.cookie = 'positionsState='
+		},
+		reloadStateFromCookies: (state)=>{
+			if(verifyCookie('positionsState')){
+				state = JSON.parse(verifyCookie('positionsState'));
+			} else {
+				state = chessboardState;
+			}
+		},
+		reloadStateFromBackEnd: (state, {payload})=>{
+			state = payload;
 		},
     },
 });
-export const { movePiece, updateMoveInfo, updatePiecesColor, removePiece } = positionsSlice.actions;
+export const { movePiece, updateMoveInfo, updatePiecesColor, removePiece, reloadStateFromCookies, reloadStateFromBackEnd } = positionsSlice.actions;
 export default positionsSlice.reducer;

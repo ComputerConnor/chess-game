@@ -1,9 +1,9 @@
 import React from 'react';
 
-function SomethingWentWrong({text}) {
+function SomethingWentWrong({ text }) {
   return (
-      <div className='somethingIsWrong'>{text}</div>
+    <div className='somethingIsWrong'>{text}</div>
   )
 }
 
-export default SomethingWentWrong
+export default SomethingWentWrong;

@@ -1,23 +1,30 @@
 import React, { useContext, useState } from 'react';
+import { useEffect } from 'react';
 import { socketContext } from '../../App';
 import { verifyCookie } from '../generalOperations/cookiesOperations';
 
-const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, setRunInterval }) => {
+const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, setRunInterval, timing, setTiming, setEnd, setError }) => {
   const { socket } = useContext(socketContext);
   const [message, setMessage] = useState('');
-  const [timing, setTiming] = useState({ min: 10, sec: 00 });
   const timer = useRef();
 
   function sendMessage() {
     if (operationsAllowed && message.length !== 0) {
-      socket.emit('message', message, code, userId);
+      if (verifyCookie('code') && verifyCookie('userId') && isConnected) {
+        socket.emit('message', message, code, userId);
+      } else {
+        setError('Something Went Wrong!');
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
+      }
     }
   }
 
   function endGame() {
-    setRunInterval(false);
-    setEnd('The Game Have Been Ended!');
-    if (verifyCookie('code') || verifyCookie('userId')) {
+    if (verifyCookie('code') && verifyCookie('userId') && isConnected) {
+      setRunInterval(false);
+      setEnd('The Game Have Been Ended!');
       socket.emit('endGame', code, userId);
       setOperationsAllowed(false);
     } else {
@@ -29,7 +36,7 @@ const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, 
   }
 
   function rematch() {
-    if (verifyCookie('code') || verifyCookie('userId')) {
+    if (verifyCookie('code') && verifyCookie('userId') && isConnected) {
       socket.emit('rematch', code, userId);
     } else {
       setError('Something Went Wrong!');
@@ -44,11 +51,14 @@ const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, 
       if (runInterval) {
         let sec = interval.sec === 0 ? 59 : interval.sec - 1;
         let min = interval.sec === 0 && interval.min !== 10 ? interval.min - 1 : interval.min;
-        setInterval({ min: interval.min - 1, sec: 59 });
+        setTiming({ min: min, sec: sec });
+        document.cookie = `timer=${min}-${sec}; max-age=${min * 60 + sec}`;
+        // if min is 0 and sec is 0 the cookie will be deleted because its max age is set to 0
       }
     }, 1000);
     if (interval.sec === 0 && interval.min === 0) {
       clearInterval(interval);
+      setEnd(true)
     };
     return () => {
       clearInterval(interval);
@@ -60,7 +70,11 @@ const gameSecondPart = ({ operationsAllowed, setOperationsAllowed, runInterval, 
       <div className={`messages ${operationsAllowed ? 'notAllowed' : ''}`}>
         <div className="messagesContainer"></div>
         <div className="messagesSender">
-          <input type="text" name="message" id="message" onChange={(e) => setMessage(e.target.value)} />
+          <input
+            type="text" name="message" id="message"
+            readOnly={operationsAllowed ? false : true}
+            onChange={(e) => setMessage(e.target.value)}
+          />
           <button id="messageButton" onClick={sendMessage}>send</button>
         </div>
       </div>

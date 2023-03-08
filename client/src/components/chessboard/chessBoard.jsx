@@ -5,16 +5,16 @@ import { movePiece, removePiece, updateMoveInfo, updatePiecesColor } from '../..
 import { updatePart } from '../../states/fenState';
 import getRows from './chessBoardOperations/generateBoardJSX';
 import { useDispatch, useSelector } from 'react-redux';
-import SomethingWentWrong from '../somethingWentWrong';
+import { verifyCookie } from '../generalOperations/cookiesOperations';
 
-const ChessBoard = ({ gameWinner, setGameWinner, checkmate, setCheckmate, setError }) => {
+const ChessBoard = ({ setGameWinner, checkmate, setCheckmate, setError }) => {
     // realtime operations and status
-    const { socket, isConnected } = useContext(socketContext);
+    const { socket, isConnected, userId } = useContext(socketContext);
 
     // take the function that dispatch actions to the redux store
     const dispatch = useDispatch();
     // fen state
-    const fenState = useSelector(state => state.fenState);
+    const fenState = useSelector(state => state.fenState); X
     // positionsState
     const positionsState = useSelector(state => state.positionsState);
     // selected square position
@@ -24,13 +24,12 @@ const ChessBoard = ({ gameWinner, setGameWinner, checkmate, setCheckmate, setErr
     // a pawn must be prompted
     const [prompted, setPrompted] = useState(false);
 
+    // the opponent userId
+    const [opponentId, setOpponentId] = useState(null); X
+
     // update positions in state 
     function updatePositions(oldRowIx, oldSquareIx, newRowIx, newSquareIx, piece) {
         dispatch(movePiece({ oldRowIx, oldSquareIx, newRowIx, newSquareIx, piece }))
-    }
-    // set the pieces color of user based on wether he create a room or joined it
-    function setPiecesColorTo(color) {
-        dispatch(updatePiecesColor(color));
     }
     // update move info object which describe what was the last act by the user
     // clicked a piece or not, clicked a square to move to or not
@@ -46,19 +45,57 @@ const ChessBoard = ({ gameWinner, setGameWinner, checkmate, setCheckmate, setErr
         removePiece({ rowIx, squareIx });
     }
 
-    return (
-        <div id="board">
-            {
-                getRows(
-                    positionsState, fenState,
-                    isConnected, positionsState, fenState,
-                    selectSquarePosition,
-                    highlightedSquares, setHighlightedSquares, prompted, setPrompted,
-                    checkmate, setCheckmate, setError, setGameWinner, setSelectSquarePosition,
-                    updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
-                    socket,
-                )
+    useEffect(() => {
+        if (!positionsState.computer) {
+            if (verifyCookie('opponentId')) {
+                setOpponentId(verifyCookie('opponentId'))
+            } else {
+                socket.on('opponentJoined', (opponentId) => {
+                    setOpponentId(opponentId);
+                });
             }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!positionsState.computer) {
+            socket.emit('updatedStates', (fenState, positionsState) => {
+                xxxxxxxxxxx
+            });
+        }
+    }, [fenState, positionsState])
+
+    return (
+        <div className="boardArea">
+            <div className="player">
+                <div className="pfp">
+                    <img src="./imgs/defaultProfileImage.png" alt={`${positionsState.piecesColor === 'black' ? userId : opponentId ? opponentId : 'loading...'}`} title={`${positionsState.piecesColor === 'black' ? userId : opponentId ? opponentId : 'loading...'}`} />
+                </div>
+                <div className="username">
+                    {positionsState.piecesColor === 'black' ? userId : opponentId ? opponentId : 'loading...'}
+                </div>
+            </div>
+            <div id="board">
+                {
+                    getRows(
+                        positionsState, fenState,
+                        isConnected, positionsState, fenState,
+                        selectSquarePosition,
+                        highlightedSquares, setHighlightedSquares, prompted, setPrompted,
+                        checkmate, setCheckmate, setError, setGameWinner, setSelectSquarePosition,
+                        updatePositions, removePieceFn, updatePartFn, updateMoveInfoFn,
+                        socket,
+                    )
+                }
+            </div>
+            <div className="player">
+                <div className="pfp">
+                    <img src="./imgs/defaultProfileImage.png" alt={`${positionsState.piecesColor === 'black' ? userId : opponentId ? opponentId : 'loading...'}`} title={`${positionsState.piecesColor === 'black' ? userId : opponentId ? opponentId : 'loading...'}`} />
+                </div>
+                <div className="username">
+                    {positionsState.piecesColor === 'white' ? userId : opponentId ? opponentId : 'loading...'}
+                </div>
+            </div>
         </div>
     );
 };
